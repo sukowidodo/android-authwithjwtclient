@@ -1,5 +1,6 @@
 package com.sukowidodo.authwithjwt
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class LoginActivity : AppCompatActivity() {
 
-
+    var pref:SharedPreferences?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,8 +44,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun HandleResponse(authrespmodel:AuthRespModel){
-        val tokenn:String = authrespmodel.token!!;
-        Log.d("token",tokenn)
+        val token:String = authrespmodel.token!!;
+        Log.d("token",token)
+        val editor = pref!!.edit()
+        editor.putString("token",token)
+        editor.commit()
     }
 
     fun HandleError(error:Throwable){
