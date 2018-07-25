@@ -8,11 +8,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.sukowidodo.authwithjwt.model.AuthRespModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
-abstract class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,13 +27,28 @@ abstract class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener(View.OnClickListener {
             val username = etUsername.text.toString()
             val password = etPassword.text.toString()
-            val postLoginDo = PostLoginDo(service,username, password)
-            Log.d("token",postLoginDo.token)
+            PostLoginDo(service,username, password)
         })
     }
 
-    fun PostLoginDo(service:RetroInterface,username:String,password:String): AuthRespModel {
-        return service.PostLogin(username,password)
+    fun PostLoginDo(service:RetroInterface,username:String,password:String) {
+        service.PostLogin(username,password)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::HandleResponse,
+                        this::HandleError
+                )
+
+    }
+
+    fun HandleResponse(authrespmodel:AuthRespModel){
+        val tokenn:String = authrespmodel.token!!;
+        Log.d("token",tokenn)
+    }
+
+    fun HandleError(error:Throwable){
+        Log.e("Error",error.message)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
