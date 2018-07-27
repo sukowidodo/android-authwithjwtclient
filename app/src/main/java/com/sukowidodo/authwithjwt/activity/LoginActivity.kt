@@ -1,14 +1,18 @@
-package com.sukowidodo.authwithjwt
+package com.sukowidodo.authwithjwt.activity
 
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.sukowidodo.authwithjwt.model.AuthRespModel
+import com.sukowidodo.authwithjwt.R
+import com.sukowidodo.authwithjwt.retrofit.RetroClient
+import com.sukowidodo.authwithjwt.retrofit.RetroInterface
+import com.sukowidodo.authwithjwt.model.LoginModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -32,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         })
     }
 
-    fun PostLoginDo(service:RetroInterface,username:String,password:String) {
+    fun PostLoginDo(service: RetroInterface, username:String, password:String) {
         service.PostLogin(username,password)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -43,12 +47,16 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    fun HandleResponse(authrespmodel:AuthRespModel){
+    fun HandleResponse(authrespmodel:LoginModel){
         val token:String = authrespmodel.token!!;
         Log.d("token",token)
+        pref = getSharedPreferences("mypref",Context.MODE_PRIVATE)
         val editor = pref!!.edit()
         editor.putString("token",token)
         editor.commit()
+
+        val gotohome = Intent(this,HomeActivity::class.java)
+        startActivity(gotohome)
     }
 
     fun HandleError(error:Throwable){

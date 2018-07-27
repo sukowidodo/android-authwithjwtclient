@@ -1,4 +1,4 @@
-package com.sukowidodo.authwithjwt
+package com.sukowidodo.authwithjwt.retrofit
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
